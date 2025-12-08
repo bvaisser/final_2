@@ -1,0 +1,221 @@
+{
+  "version": "1.0",
+  "dataset_name": "retail_ai_dataset",
+  "description": "Dataset contract for retail AI project",
+  "schema": {
+    "date": {
+      "dtype": "object",
+      "nullable": false,
+      "unique_count": 381,
+      "missing_count": 0,
+      "missing_percentage": 0.0,
+      "top_values": {
+        "11/10/2024": 26,
+        "03/02/2025": 25,
+        "30/07/2024": 24,
+        "05/02/2025": 24,
+        "22/09/2024": 24,
+        "21/02/2025": 23,
+        "14/03/2025": 23,
+        "17/09/2024": 23,
+        "31/07/2024": 22,
+        "07/09/2024": 22
+      }
+    },
+    "datetime": {
+      "dtype": "object",
+      "nullable": false,
+      "unique_count": 3636,
+      "missing_count": 0,
+      "missing_percentage": 0.0,
+      "top_values": {
+        "01/03/2024 10:15:51": 1,
+        "01/12/2024 16:32:59": 1,
+        "28/11/2024 20:24:42": 1,
+        "28/11/2024 20:25:46": 1,
+        "28/11/2024 20:55:00": 1,
+        "28/11/2024 22:00:16": 1,
+        "29/11/2024 07:53:16": 1,
+        "29/11/2024 07:57:42": 1,
+        "29/11/2024 09:07:32": 1,
+        "29/11/2024 09:08:30": 1
+      }
+    },
+    "hour_of_day": {
+      "dtype": "int64",
+      "nullable": false,
+      "unique_count": 17,
+      "missing_count": 0,
+      "missing_percentage": 0.0,
+      "min": 6.0,
+      "max": 22.0,
+      "mean": 14.166941694169417,
+      "median": 14.0,
+      "std": 4.2277548384829675
+    },
+    "cash_type": {
+      "dtype": "object",
+      "nullable": false,
+      "unique_count": 2,
+      "missing_count": 0,
+      "missing_percentage": 0.0,
+      "top_values": {
+        "card": 3547,
+        "cash": 89
+      }
+    },
+    "card": {
+      "dtype": "object",
+      "nullable": false,
+      "unique_count": 1316,
+      "missing_count": 0,
+      "missing_percentage": 0.0,
+      "top_values": {
+        "ANON-0000-0000-0012": 218,
+        "ANON-0000-0000-0141": 108,
+        "ANON-0000-0000-1163": 77,
+        "ANON-0000-0000-0276": 69,
+        "ANON-0000-0000-0009": 67,
+        "ANON-0000-0000-0507": 51,
+        "ANON-0000-0000-0040": 50,
+        "ANON-0000-0000-0097": 47,
+        "ANON-0000-0000-1110": 33,
+        "ANON-0000-0000-1170": 32
+      }
+    },
+    "money": {
+      "dtype": "object",
+      "nullable": false,
+      "unique_count": 20,
+      "missing_count": 0,
+      "missing_percentage": 0.0,
+      "top_values": {
+        "R35.76": 1014,
+        "R32.82": 490,
+        "R25.96": 459,
+        "R30.86": 389,
+        "R27.92": 334,
+        "R37.72": 273,
+        "R23.02": 208,
+        "R38.70": 128,
+        "R28.90": 93,
+        "R21.06": 59
+      }
+    },
+    "coffee_name": {
+      "dtype": "object",
+      "nullable": false,
+      "unique_count": 8,
+      "missing_count": 0,
+      "missing_percentage": 0.0,
+      "top_values": {
+        "Americano with Milk": 824,
+        "Latte": 782,
+        "Americano": 578,
+        "Cappuccino": 501,
+        "Cortado": 292,
+        "Hot Chocolate": 282,
+        "Cocoa": 243,
+        "Espresso": 134
+      }
+    },
+    "Time_of_Day": {
+      "dtype": "object",
+      "nullable": false,
+      "unique_count": 3,
+      "missing_count": 0,
+      "missing_percentage": 0.0,
+      "top_values": {
+        "Afternoon": 1231,
+        "Morning": 1221,
+        "Night": 1184
+      }
+    },
+    "Weekday": {
+      "dtype": "object",
+      "nullable": false,
+      "unique_count": 7,
+      "missing_count": 0,
+      "missing_percentage": 0.0,
+      "top_values": {
+        "Tue": 585,
+        "Mon": 561,
+        "Fri": 544,
+        "Thu": 520,
+        "Wed": 510,
+        "Sat": 482,
+        "Sun": 434
+      }
+    },
+    "Month_name": {
+      "dtype": "object",
+      "nullable": false,
+      "unique_count": 12,
+      "missing_count": 0,
+      "missing_percentage": 0.0,
+      "top_values": {
+        "Mar": 525,
+        "Oct": 426,
+        "Feb": 423,
+        "Sep": 344,
+        "Aug": 272,
+        "May": 267,
+        "Nov": 259,
+        "Dec": 259,
+        "Jul": 237,
+        "Jun": 227
+      }
+    },
+    "Weekdaysort": {
+      "dtype": "int64",
+      "nullable": false,
+      "unique_count": 7,
+      "missing_count": 0,
+      "missing_percentage": 0.0,
+      "min": 1.0,
+      "max": 7.0,
+      "mean": 3.847909790979098,
+      "median": 4.0,
+      "std": 1.9759833179307016
+    },
+    "Monthsort": {
+      "dtype": "int64",
+      "nullable": false,
+      "unique_count": 12,
+      "missing_count": 0,
+      "missing_percentage": 0.0,
+      "min": 1.0,
+      "max": 12.0,
+      "mean": 6.3946644664466445,
+      "median": 6.0,
+      "std": 3.4806858124621645
+    }
+  },
+  "statistics": {},
+  "constraints": {
+    "row_count": {
+      "min": 100,
+      "max": null
+    },
+    "missing_threshold": 0.5,
+    "required_columns": [
+      "date",
+      "datetime",
+      "hour_of_day",
+      "cash_type",
+      "card",
+      "money",
+      "coffee_name",
+      "Time_of_Day",
+      "Weekday",
+      "Month_name",
+      "Weekdaysort",
+      "Monthsort"
+    ]
+  },
+  "metadata": {
+    "total_records": 3636,
+    "total_features": 12,
+    "creation_date": "2025-12-06T15:29:17.323771"
+  }
+}

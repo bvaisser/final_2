@@ -1,0 +1,902 @@
+# ============================================================
+# DATA ANALYST CREW TASKS
+# ============================================================
+
+# --------------- Agent 1: Data Ingestion Specialist Tasks ---------------
+
+dataset_discovery_selection:
+  description: >
+    Search for and select a suitable dataset from Kaggle or public Open Data sources.
+
+    Requirements:
+    - Dataset must have at least 1000 rows and 5+ columns
+    - Assess data quality, relevance, and completeness
+    - Consider datasets related to retail, e-commerce, sales, or customer behavior
+    - Document the data source, licensing, and selection rationale
+
+    Evaluation Criteria:
+    - Data completeness (minimal missing values)
+    - Feature richness (diverse column types)
+    - Business relevance
+    - Clear documentation
+
+    Output a detailed selection report including:
+    - Dataset name and source URL
+    - Dataset dimensions (rows × columns)
+    - Brief description of the dataset
+    - Rationale for selection
+    - Potential use cases
+  expected_output: >
+    A markdown file at artifacts/dataset_selection_report.md documenting the chosen
+    dataset with full details about source, dimensions, and selection rationale.
+  agent: data_ingestion_specialist
+
+dataset_ingestion:
+  description: >
+    Download and load the selected dataset into the working environment.
+
+    Steps:
+    1. Download the dataset from the selected source
+    2. Place raw data file in data/raw/Coffe_sales.csv
+    3. Load data into pandas DataFrame
+    4. Verify file integrity and encoding
+    5. Perform initial inspection (head, info, describe)
+
+    Handle potential issues:
+    - Large file sizes (consider sampling if > 100MB)
+    - Encoding issues (detect and convert to UTF-8)
+    - Compressed formats (zip, gz, etc.)
+
+    Create initial data profile:
+    - Number of rows and columns
+    - Column names and data types
+    - Memory usage
+    - Sample rows (first 10)
+  expected_output: >
+    Raw dataset saved at data/raw/Coffe_sales.csv and an initial data profile document
+    at artifacts/raw_data_profile.txt with basic statistics and structure information.
+  agent: data_ingestion_specialist
+
+initial_validation:
+  description: >
+    Perform comprehensive initial validation of the ingested raw data.
+
+    Validation Checks:
+    1. Schema Validation:
+       - Verify expected columns are present
+       - Check data types are appropriate
+       - Identify column naming issues
+
+    2. Data Quality Assessment:
+       - Calculate missing value percentages per column
+       - Identify duplicate rows
+       - Detect null or empty strings
+       - Check for placeholder values (-999, 'N/A', 'Unknown', etc.)
+
+    3. Basic Statistics:
+       - Numerical columns: min, max, mean, median, std
+       - Categorical columns: unique values, value counts
+       - Date columns: date ranges, gaps
+
+    4. Anomaly Detection:
+       - Identify outliers using IQR method
+       - Flag unusual distributions
+       - Detect constant or near-constant columns
+
+    Create a comprehensive validation report documenting all findings and
+    pass the validated dataset to the Data Cleaning Engineer.
+  expected_output: >
+    A detailed validation report at artifacts/validation_report.md with all quality
+    checks, statistics, and flagged issues. Include summary of pass/fail status for each check.
+  agent: data_ingestion_specialist
+
+# --------------- Agent 2: Data Cleaning Engineer Tasks ---------------
+
+data_cleaning:
+  description: >
+    Perform comprehensive data cleaning on the raw validated dataset.
+
+    Cleaning Operations:
+
+    1. Missing Values Handling:
+       - Numeric columns: Impute with median, mean, or mode based on distribution
+       - Categorical columns: Impute with mode or create 'Unknown' category
+       - Consider dropping columns with >70% missing values
+       - Document all imputation strategies used
+
+    2. Duplicate Removal:
+       - Identify and remove exact duplicates
+       - Check for near-duplicates (fuzzy matching for text fields)
+       - Document number of duplicates removed
+
+    3. Outlier Treatment:
+       - Detect outliers using IQR method or Z-score
+       - Cap extreme values (winsorization) or remove if appropriate
+       - Document outlier handling strategy
+
+    4. Data Consistency:
+       - Fix inconsistent categorical values (e.g., 'NY', 'New York', 'ny' → 'New York')
+       - Standardize text fields (trim whitespace, fix capitalization)
+       - Handle special characters in text fields
+
+    5. Data Type Corrections:
+       - Convert numeric strings to proper numeric types
+       - Parse date strings to datetime objects
+       - Convert categorical codes to meaningful labels if mapping available
+
+    Document every transformation with before/after statistics.
+  expected_output: >
+    A cleaning log document at artifacts/cleaning_log.md with detailed documentation
+    of all cleaning operations, decisions made, and before/after statistics for each transformation.
+  agent: data_cleaning_engineer
+
+data_preprocessing:
+  description: >
+    Apply preprocessing transformations to prepare data for analysis.
+
+    Preprocessing Steps:
+
+    1. Categorical Encoding:
+       - Label Encoding for ordinal variables
+       - One-Hot Encoding for nominal variables with <10 categories
+       - Frequency Encoding for high-cardinality variables
+       - Document encoding schemes used
+
+    2. Numerical Feature Scaling (Optional for EDA, Required for modeling):
+       - Standardization (Z-score normalization) for normally distributed features
+       - Min-Max scaling for bounded features
+       - Log transformation for skewed distributions
+       - Document scaling methods per feature
+
+    3. Feature Engineering (Basic):
+       - Extract date components (year, month, day, weekday) from datetime columns
+       - Create derived features (e.g., total_price = quantity × unit_price)
+       - Bin continuous variables if meaningful categories exist
+       - Create interaction features if domain knowledge suggests
+
+    4. Data Validation:
+       - Ensure no missing values remain
+       - Verify all data types are correct
+       - Check value ranges are sensible
+       - Validate referential integrity if multiple related columns exist
+
+    Document all preprocessing decisions and transformations applied.
+  expected_output: >
+    A data dictionary JSON file at artifacts/data_dictionary.json containing detailed
+    metadata for each column including: original name, processed name, data type,
+    description, transformations applied, valid ranges, and example values.
+  agent: data_cleaning_engineer
+
+save_clean_data:
+  description: >
+    Finalize and save the cleaned dataset with comprehensive documentation.
+
+    Final Steps:
+
+    1. Data Quality Verification:
+       - Run final validation checks
+       - Ensure data integrity constraints are met
+       - Verify no data loss during cleaning (acceptable range)
+       - Check for any remaining issues
+
+    2. Save Cleaned Dataset:
+       - Save to data/interim/clean_data.csv
+       - Use appropriate encoding (UTF-8)
+       - Ensure proper CSV formatting
+       - Verify file can be read back correctly
+
+    3. Generate Summary Statistics:
+       - Before/After comparison table
+       - Rows processed vs rows kept
+       - Columns processed vs columns kept
+       - Data quality score (e.g., completeness %)
+
+    4. Create Comprehensive Documentation:
+       - List all columns with descriptions
+       - Document all transformations pipeline
+       - Note any limitations or caveats
+       - Provide usage recommendations
+
+    Prepare handoff package for Analytics team including clean data and all documentation.
+  expected_output: >
+    Clean dataset at data/interim/clean_data.csv and a comprehensive preprocessing summary
+    at artifacts/preprocessing_summary.md with before/after statistics, transformation
+    pipeline details, and data quality metrics.
+  agent: data_cleaning_engineer
+
+# --------------- Agent 3: Analytics & Insights Specialist Tasks ---------------
+
+exploratory_data_analysis:
+  description: >
+    Perform comprehensive Exploratory Data Analysis (EDA) on the cleaned dataset.
+
+    EDA Components:
+
+    1. Descriptive Statistics:
+       - Generate summary statistics for all numerical variables
+       - Frequency distributions for categorical variables
+       - Percentile analysis (25th, 50th, 75th, 90th, 95th, 99th)
+       - Variance, skewness, and kurtosis analysis
+
+    2. Distribution Analysis:
+       - Histograms for numerical features
+       - Bar charts for categorical features
+       - Box plots for outlier visualization
+       - Density plots for continuous variables
+       - Q-Q plots for normality assessment
+
+    3. Correlation Analysis:
+       - Correlation heatmap for numerical features
+       - Identify highly correlated features (r > 0.8)
+       - Scatter plots for interesting relationships
+       - Point-biserial correlations for categorical-numerical relationships
+
+    4. Categorical Analysis:
+       - Pie charts for categorical distributions
+       - Stacked bar charts for multi-categorical relationships
+       - Chi-square tests for categorical associations
+
+    5. Time Series Analysis (if applicable):
+       - Trend analysis over time
+       - Seasonality detection
+       - Moving averages
+
+    6. Pattern & Anomaly Detection:
+       - Identify unusual patterns
+       - Flag potential data quality issues
+       - Highlight interesting segments
+
+    Use libraries like matplotlib, seaborn, plotly for rich visualizations.
+  expected_output: >
+    An interactive HTML EDA report at artifacts/eda_report.html containing all statistical
+    analyses, visualizations, and a narrative explanation of findings. Use plotly for
+    interactive charts or pandas-profiling for automated comprehensive reports.
+  agent: analytics_insights_specialist
+
+extract_business_insights:
+  description: >
+    Extract actionable business insights from the exploratory data analysis.
+
+    Insight Categories:
+
+    1. Key Findings:
+       - Most important patterns discovered
+       - Significant correlations and relationships
+       - Unexpected observations
+       - Data limitations identified
+
+    2. Business Implications:
+       - How findings relate to business objectives
+       - Potential impact on decision-making
+       - Opportunities identified in the data
+       - Risks or concerns highlighted
+
+    3. Feature Importance:
+       - Which features appear most predictive
+       - Which features have most business value
+       - Which features might need engineering
+
+    4. Recommendations:
+       - Data-driven recommendations for stakeholders
+       - Suggested next steps for modeling
+       - Features to focus on or exclude
+       - Additional data that might be valuable
+
+    5. Data Storytelling:
+       - Create a narrative that connects the data to business value
+       - Use clear, non-technical language
+       - Support claims with specific evidence from analysis
+       - Provide actionable recommendations
+
+    Write insights in clear, accessible markdown suitable for both technical and
+    non-technical audiences.
+  expected_output: >
+    A comprehensive insights document at artifacts/insights.md containing key findings,
+    business implications, feature importance analysis, and actionable recommendations.
+    Structure with clear headings, bullet points, and references to visualizations.
+  agent: analytics_insights_specialist
+
+create_dataset_contract:
+  description: >
+    Create a formal dataset contract (schema definition) for the Data Scientist crew.
+
+    Contract Components:
+
+    1. Schema Definition:
+       - Column names (exact strings)
+       - Data types (int, float, str, datetime, bool, category)
+       - Nullable (whether null values are allowed)
+       - Description (business meaning of each column)
+
+    2. Constraints & Validation Rules:
+       - Value ranges (min/max for numerical, allowed values for categorical)
+       - Regular expressions for string patterns (e.g., email, phone)
+       - Referential integrity rules
+       - Business rules (e.g., end_date must be >= start_date)
+
+    3. Data Quality Metrics:
+       - Expected completeness percentage per column
+       - Expected distribution characteristics
+       - Acceptable outlier percentage
+       - Data freshness requirements
+
+    4. Assumptions & Caveats:
+       - Known data limitations
+       - Assumptions made during cleaning
+       - Potential biases in the data
+       - Recommended use cases
+
+    5. Usage Guidelines:
+       - How to load and validate the data
+       - Required preprocessing steps
+       - Recommended train/test split strategy
+       - Features suitable for modeling
+
+    6. Metadata:
+       - Contract version
+       - Creation date
+       - Dataset version
+       - Contact information
+
+    Format as structured JSON following JSON Schema standard.
+  expected_output: >
+    A formal JSON dataset contract at artifacts/dataset_contract.json containing complete
+    schema definition, constraints, validation rules, assumptions, and usage guidelines.
+    This contract serves as the official specification that the Data Scientist crew must follow.
+  agent: analytics_insights_specialist
+
+generate_visualizations:
+  description: >
+    Create a comprehensive set of publication-quality visualizations.
+
+    Visualization Categories:
+
+    1. Distribution Visualizations:
+       - Histograms with KDE overlays for continuous variables
+       - Bar charts for categorical variables
+       - Box plots grouped by categories
+       - Violin plots for distribution comparison
+
+    2. Relationship Visualizations:
+       - Correlation heatmap (annotated with values)
+       - Scatter plots with trend lines
+       - Pair plots for key variable groups
+       - Bubble charts for 3-variable relationships
+
+    3. Categorical Visualizations:
+       - Stacked/grouped bar charts
+       - Pie/donut charts with percentages
+       - Tree maps for hierarchical categories
+       - Count plots sorted by frequency
+
+    4. Time Series Visualizations (if applicable):
+       - Line plots with confidence intervals
+       - Area charts for cumulative trends
+       - Seasonal decomposition plots
+
+    5. Advanced Visualizations:
+       - Parallel coordinates for multivariate analysis
+       - Radar charts for multi-dimensional comparison
+       - Sankey diagrams for flow analysis
+       - Geographic maps if location data present
+
+    Design Principles:
+    - Use consistent color schemes
+    - Add clear titles and axis labels
+    - Include legends where appropriate
+    - Ensure accessibility (color-blind friendly)
+    - Optimize for both screen and print
+
+    Save all visualizations as high-resolution images.
+  expected_output: >
+    A folder at artifacts/visualizations/ containing all generated plots as PNG files
+    with descriptive filenames. Also create an index file artifacts/visualizations/index.md
+    listing all visualizations with descriptions.
+  agent: analytics_insights_specialist
+
+# ============================================================
+# DATA SCIENTIST CREW TASKS
+# ============================================================
+
+# --------------- Agent 1: Feature Engineering Specialist Tasks ---------------
+
+validate_dataset_and_contract:
+  description: >
+    Read and validate the cleaned dataset and dataset contract from Data Analyst Crew.
+
+    Validation Steps:
+
+    1. Load Dataset and Contract:
+       - Read data/interim/clean_data.csv
+       - Load artifacts/dataset_contract.json
+       - Verify file integrity and format
+
+    2. Schema Validation:
+       - Verify all columns in contract exist in dataset
+       - Check data types match contract specifications
+       - Validate nullable constraints
+       - Ensure value ranges are within contract bounds
+
+    3. Data Quality Checks:
+       - Verify no missing values (or within acceptable limits per contract)
+       - Check data completeness percentages
+       - Validate categorical values are in allowed sets
+       - Verify numerical values are within min/max ranges
+
+    4. Business Rules Validation:
+       - Check business logic constraints from contract
+       - Verify referential integrity
+       - Validate date ranges and sequences
+
+    5. Statistical Validation:
+       - Compare actual distributions to expected distributions
+       - Check if outlier percentages are within acceptable limits
+       - Verify feature correlations make sense
+
+    Create a validation report documenting pass/fail status of all checks.
+    If validation fails, document specific issues and stop the pipeline.
+    If validation passes, proceed with feature engineering.
+  expected_output: >
+    A validation report at artifacts/contract_validation_report.md with detailed
+    results of all validation checks and confirmation that dataset adheres to contract.
+  agent: feature_engineering_specialist
+
+perform_feature_engineering:
+  description: >
+    Engineer powerful predictive features from the validated cleaned dataset.
+
+    Feature Engineering Techniques:
+
+    1. Domain-Specific Features:
+       - Create business-relevant derived features
+       - Calculate ratios, percentages, aggregations
+       - Time-based features (if datetime columns exist)
+       - Seasonal indicators, day of week, month, etc.
+
+    2. Mathematical Transformations:
+       - Polynomial features (degree 2 or 3) for key variables
+       - Log transformations for skewed features
+       - Square root, reciprocal transformations
+       - Binning continuous variables into categories
+
+    3. Interaction Features:
+       - Multiply important feature pairs
+       - Division ratios between related features
+       - Conditional features (if X then Y)
+
+    4. Encoding Techniques:
+       - Target encoding for high-cardinality categoricals
+       - Frequency encoding
+       - Binary encoding
+       - Ordinal encoding for ordered categories
+
+    5. Aggregation Features:
+       - Group-by aggregations (mean, sum, count, std)
+       - Rolling window statistics (if time series)
+       - Cumulative sums and products
+
+    6. Feature Selection Preparation:
+       - Remove constant or near-constant features
+       - Remove highly correlated features (>0.95)
+       - Keep track of feature importance indicators
+
+    Important Considerations:
+    - NO DATA LEAKAGE: Ensure no future information bleeds into training
+    - Document every transformation clearly
+    - Maintain feature name conventions
+    - Create feature_metadata.json explaining each feature
+
+    Save the engineered dataset with clear column names.
+  expected_output: >
+    Feature-engineered dataset at data/processed/features.csv and a detailed
+    feature metadata JSON file at artifacts/feature_metadata.json documenting
+    every feature, its calculation method, and business meaning.
+  agent: feature_engineering_specialist
+
+prepare_train_test_split:
+  description: >
+    Prepare the feature-engineered dataset for model training.
+
+    Preparation Steps:
+
+    1. Target Variable Identification:
+       - Identify target variable from dataset contract
+       - Verify target has no missing values
+       - Check target distribution (balanced/imbalanced)
+       - Document class distribution for classification problems
+
+    2. Train-Test Split:
+       - Split data into train/test sets (80/20 or per contract recommendation)
+       - Use stratified split for classification to maintain class balance
+       - Use random_state for reproducibility
+       - Ensure chronological split if time series data
+
+    3. Feature Scaling:
+       - Fit scalers on training data ONLY
+       - Apply StandardScaler or MinMaxScaler to numerical features
+       - Save scaler objects for production use
+       - Document scaling method per feature
+
+    4. Handle Class Imbalance (if applicable):
+       - Calculate class weights
+       - Consider SMOTE or undersampling (document choice)
+       - Note: Apply only on training set
+
+    5. Save Preprocessed Data:
+       - Save train and test sets separately
+       - Save feature names list
+       - Save target variable name
+       - Save preprocessing artifacts (scalers, encoders)
+
+    6. Create Data Summary:
+       - Training set size and shape
+       - Test set size and shape
+       - Feature count
+       - Target distribution
+       - Missing value summary
+
+    Prepare comprehensive documentation for the Model Training Specialist.
+  expected_output: >
+    Training-ready datasets saved at data/processed/X_train.csv, data/processed/X_test.csv,
+    data/processed/y_train.csv, data/processed/y_test.csv, and a data preparation summary
+    at artifacts/data_prep_summary.md with split details and preprocessing documentation.
+  agent: feature_engineering_specialist
+
+# --------------- Agent 2: Model Training Specialist Tasks ---------------
+
+train_baseline_models:
+  description: >
+    Train multiple baseline models to establish performance benchmarks.
+
+    Baseline Models to Train (at least 3):
+
+    1. Simple Baseline:
+       - For classification: Majority class classifier
+       - For regression: Mean/median predictor
+       - Document baseline performance
+
+    2. Logistic Regression / Linear Regression:
+       - Simple linear model
+       - L1/L2 regularization
+       - Fast training, interpretable
+
+    3. Decision Tree:
+       - Single tree with default parameters
+       - Good for feature importance baseline
+
+    4. Random Forest:
+       - Ensemble of decision trees
+       - Default hyperparameters first
+       - Good general-purpose model
+
+    5. Gradient Boosting (XGBoost or LightGBM):
+       - State-of-art boosting algorithm
+       - Default hyperparameters
+       - Often best performance
+
+    Training Procedure:
+    - Load preprocessed train/test data
+    - Train each model on training set
+    - Make predictions on test set
+    - Calculate metrics: accuracy, precision, recall, F1, AUC (classification)
+      or RMSE, MAE, R² (regression)
+    - Track training time for each model
+    - Save all trained models
+
+    Create a comparison table of all baseline models.
+    Identify top 2-3 models for hyperparameter tuning.
+  expected_output: >
+    All trained baseline models saved in artifacts/models/ directory (model_lr.pkl,
+    model_rf.pkl, model_xgb.pkl, etc.) and a baseline comparison report at
+    artifacts/baseline_comparison.md with performance metrics for all models.
+  agent: model_training_specialist
+
+optimize_best_models:
+  description: >
+    Perform hyperparameter tuning on the top-performing baseline models.
+
+    Optimization Process:
+
+    1. Select Top Models:
+       - Choose 2-3 best performing baseline models
+       - Based on test set metrics from baseline training
+
+    2. Define Hyperparameter Search Space:
+       - For Random Forest:
+         - n_estimators: [100, 200, 300, 500]
+         - max_depth: [10, 20, 30, None]
+         - min_samples_split: [2, 5, 10]
+         - min_samples_leaf: [1, 2, 4]
+
+       - For XGBoost/LightGBM:
+         - learning_rate: [0.01, 0.05, 0.1, 0.3]
+         - n_estimators: [100, 200, 300]
+         - max_depth: [3, 5, 7, 9]
+         - subsample: [0.6, 0.8, 1.0]
+         - colsample_bytree: [0.6, 0.8, 1.0]
+
+       - For Logistic Regression:
+         - C: [0.001, 0.01, 0.1, 1, 10, 100]
+         - penalty: ['l1', 'l2']
+         - solver: ['liblinear', 'saga']
+
+    3. Hyperparameter Tuning Methods:
+       - Use GridSearchCV or RandomizedSearchCV
+       - 5-fold cross-validation on training set
+       - Optimize for primary metric (e.g., F1, accuracy, RMSE)
+       - Track all trials and scores
+
+    4. Train Final Models:
+       - Retrain best models with optimal hyperparameters
+       - Train on full training set
+       - Evaluate on test set
+       - Compare optimized vs baseline performance
+
+    5. Model Persistence:
+       - Save optimized models with descriptive names
+       - Save hyperparameters as JSON
+       - Save cross-validation results
+       - Document improvement over baseline
+
+    Select the single best model based on test performance and business requirements.
+    This will be the production model.
+  expected_output: >
+    Optimized models saved in artifacts/models/ with best model saved as
+    artifacts/model.pkl (or model.joblib), and hyperparameter tuning report at
+    artifacts/hyperparameter_tuning.md documenting the optimization process and results.
+  agent: model_training_specialist
+
+validate_final_model:
+  description: >
+    Perform final validation and testing of the selected best model.
+
+    Validation Steps:
+
+    1. Load Best Model:
+       - Load artifacts/model.pkl
+       - Verify model can be loaded successfully
+       - Check model attributes and parameters
+
+    2. Test Set Evaluation:
+       - Load test data (X_test, y_test)
+       - Generate predictions
+       - Calculate comprehensive metrics
+       - Compare to training performance (check overfitting)
+
+    3. Cross-Validation:
+       - Perform 5-fold or 10-fold CV on full dataset
+       - Calculate mean and std of metrics
+       - Verify consistency across folds
+
+    4. Robustness Checks:
+       - Test on data subsets (if applicable)
+       - Check performance across different categories
+       - Verify model handles edge cases
+       - Test prediction latency
+
+    5. Feature Importance Analysis:
+       - Extract feature importance from model
+       - Identify top 10-20 most important features
+       - Verify important features make business sense
+       - Document any surprising findings
+
+    6. Model Artifacts:
+       - Save feature importance plot
+       - Save model summary statistics
+       - Document model signature (input/output schema)
+       - Prepare for handoff to Evaluation Specialist
+
+    Create comprehensive validation documentation for final model.
+  expected_output: >
+    Final model validation report at artifacts/final_model_validation.md with
+    comprehensive test results, cross-validation scores, feature importance analysis,
+    and confirmation that model is ready for production deployment.
+  agent: model_training_specialist
+
+# --------------- Agent 3: Model Evaluator & Documentation Specialist Tasks ---------------
+
+comprehensive_model_evaluation:
+  description: >
+    Perform comprehensive evaluation of the final model with detailed metrics and visualizations.
+
+    Evaluation Components:
+
+    1. Performance Metrics (Classification):
+       - Accuracy, Precision, Recall, F1-Score
+       - AUC-ROC, AUC-PR
+       - Confusion Matrix
+       - Classification Report (per class)
+       - Matthews Correlation Coefficient
+
+    1b. Performance Metrics (Regression):
+       - RMSE, MAE, MAPE
+       - R², Adjusted R²
+       - Residual Analysis
+       - Prediction Error Distribution
+
+    2. Visual Evaluation (Classification):
+       - Confusion Matrix Heatmap
+       - ROC Curve with AUC score
+       - Precision-Recall Curve
+       - Class Distribution Plot
+       - Prediction Probability Histograms
+
+    2b. Visual Evaluation (Regression):
+       - Actual vs Predicted Scatter Plot
+       - Residual Plot
+       - Residual Distribution (Q-Q plot)
+       - Prediction Error Plot
+
+    3. Feature Analysis:
+       - Feature Importance Bar Chart
+       - Top 20 features visualization
+       - Feature correlation with target
+       - SHAP values (if applicable)
+
+    4. Model Comparison:
+       - Compare final model vs all baselines
+       - Comparison table with all metrics
+       - Improvement percentage over baseline
+       - Trade-off analysis (accuracy vs speed, complexity)
+
+    5. Error Analysis:
+       - Identify misclassified examples (classification)
+       - Analyze largest prediction errors (regression)
+       - Look for patterns in errors
+       - Suggest potential improvements
+
+    6. Business Impact Analysis:
+       - Translate metrics to business value
+       - Calculate expected ROI or cost savings
+       - Provide actionable insights
+
+    Save all visualizations and create comprehensive evaluation report.
+  expected_output: >
+    Comprehensive evaluation report at artifacts/evaluation_report.md with all metrics,
+    visualizations saved in artifacts/evaluation_plots/, and detailed analysis of model
+    performance, comparison with baselines, and business impact assessment.
+  agent: model_evaluator_documentation_specialist
+
+create_model_card:
+  description: >
+    Create a comprehensive model card documenting all aspects of the model.
+
+    Model Card Sections (following industry standards):
+
+    1. Model Purpose:
+       - Problem statement
+       - Business objective
+       - Use case description
+       - Intended users
+       - Out-of-scope uses
+
+    2. Training Data Summary:
+       - Data source and origin
+       - Dataset size (rows, features)
+       - Time period covered
+       - Target variable description
+       - Class distribution (if classification)
+       - Data quality notes
+       - Preprocessing applied
+
+    3. Model Architecture:
+       - Algorithm used (e.g., Random Forest, XGBoost)
+       - Model type (classification/regression)
+       - Hyperparameters
+       - Training procedure
+       - Cross-validation strategy
+       - Feature engineering techniques
+
+    4. Performance Metrics:
+       - Test set metrics (accuracy, F1, RMSE, etc.)
+       - Cross-validation scores (mean ± std)
+       - Comparison to baseline
+       - Confidence intervals
+       - Performance across subgroups
+
+    5. Feature Importance:
+       - Top 10 most important features
+       - Feature importance scores
+       - Feature interpretation
+
+    6. Model Limitations:
+       - Known failure modes
+       - Data limitations
+       - Assumptions made
+       - Edge cases not handled well
+       - Scenarios where model may underperform
+
+    7. Ethical Considerations:
+       - Potential biases in data
+       - Fairness analysis (if applicable)
+       - Privacy considerations
+       - Social impact
+       - Recommendations for responsible use
+
+    8. Deployment Information:
+       - Model file location
+       - Required dependencies
+       - Input schema
+       - Output schema
+       - Prediction latency
+       - Recommended refresh frequency
+
+    9. Maintenance and Monitoring:
+       - Suggested monitoring metrics
+       - Model retraining triggers
+       - Data drift detection
+       - Performance degradation indicators
+
+    10. References and Contact:
+        - Training date
+        - Model version
+        - Contact information
+        - Related documentation
+
+    Write in clear, professional markdown suitable for technical and non-technical audiences.
+  expected_output: >
+    A comprehensive model card at artifacts/model_card.md following industry standards,
+    documenting model purpose, training data, metrics, limitations, and ethical
+    considerations in a clear and accessible format.
+  agent: model_evaluator_documentation_specialist
+
+generate_deployment_package:
+  description: >
+    Create a complete deployment package with all necessary artifacts and documentation.
+
+    Package Contents:
+
+    1. Model Files:
+       - artifacts/model.pkl (or .joblib) - primary model
+       - artifacts/scaler.pkl - feature scalers
+       - artifacts/encoder.pkl - categorical encoders (if used)
+       - artifacts/feature_names.json - list of features
+
+    2. Configuration Files:
+       - model_config.json:
+         - Model metadata
+         - Hyperparameters
+         - Feature list
+         - Preprocessing steps
+         - Thresholds (for classification)
+
+    3. Documentation:
+       - evaluation_report.md (comprehensive metrics)
+       - model_card.md (model documentation)
+       - deployment_guide.md (how to use the model)
+       - API_schema.json (input/output schema)
+
+    4. Code Examples:
+       - example_prediction.py (Python example)
+       - example_batch_predict.py (Batch processing)
+       - example_api_call.py (API usage)
+
+    5. Validation Scripts:
+       - validate_model.py (model integrity check)
+       - validate_inputs.py (input validation)
+       - test_predictions.py (smoke tests)
+
+    6. Performance Benchmarks:
+       - benchmark_results.json
+       - Prediction latency stats
+       - Memory usage
+       - Throughput metrics
+
+    7. Monitoring Templates:
+       - monitoring_dashboard.json (template)
+       - alerting_rules.yaml
+       - drift_detection_config.yaml
+
+    Create a deployment README with:
+    - Quick start guide
+    - Installation instructions
+    - Usage examples
+    - Troubleshooting tips
+    - FAQ
+
+    Verify all files are present and accessible.
+  expected_output: >
+    A complete deployment package in artifacts/deployment/ directory containing
+    all model files, configurations, documentation, and examples, plus a
+    DEPLOYMENT_README.md with comprehensive deployment instructions.
+  agent: model_evaluator_documentation_specialist
