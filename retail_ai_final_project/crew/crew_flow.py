@@ -63,13 +63,15 @@ class RetailAIFlow(Flow[RetailAIState]):
 
     def __init__(self):
         super().__init__()
-        self.agents_config = self._load_config("crew/agents.yaml")
-        self.tasks_config = self._load_config("crew/tasks.yaml")
+        # Get the project root directory (parent of crew directory)
+        self.project_root = Path(__file__).parent.parent
+        self.agents_config = self._load_config(str(self.project_root / "crew/agents.yaml"))
+        self.tasks_config = self._load_config(str(self.project_root / "crew/tasks.yaml"))
 
         # Initialize logging
         self.logger_manager = PipelineLogger(
             name="retail_ai_pipeline",
-            log_dir="logs",
+            log_dir=str(self.project_root / "logs"),
             log_level=20  # INFO level
         )
         self.logger = self.logger_manager.get_logger()
@@ -166,14 +168,14 @@ class RetailAIFlow(Flow[RetailAIState]):
             # This eliminates 90-180 seconds of LLM overhead
 
             print("\n📊 Step 1/5: Loading raw data...")
-            df_raw = load_data("data/raw/Coffe_sales.csv")
+            df_raw = load_data(str(self.project_root / "data/raw/Coffe_sales.csv"))
             print(f"  ✅ Loaded {df_raw.shape[0]:,} rows, {df_raw.shape[1]} columns")
 
             print("\n🧹 Step 2/5: Cleaning data...")
             df_cleaned = clean_data(df_raw)
             # Cache cleaned data in memory to avoid re-reading
             self._cached_clean_data = df_cleaned
-            save_clean_data(df_cleaned)
+            save_clean_data(df_cleaned, str(self.project_root / "data/interim/clean_data.csv"))
             print(f"  ✅ Cleaned data saved: {df_cleaned.shape}")
 
             print("\n📈 Step 3/5: Generating EDA report...")
@@ -192,8 +194,8 @@ class RetailAIFlow(Flow[RetailAIState]):
 
             # Validate required outputs before proceeding
             required_outputs = [
-                "data/interim/clean_data.csv",
-                "artifacts/dataset_contract.json"
+                str(self.project_root / "data/interim/clean_data.csv"),
+                str(self.project_root / "artifacts/dataset_contract.json")
             ]
 
             try:
@@ -287,15 +289,15 @@ class RetailAIFlow(Flow[RetailAIState]):
             print("\n🔍 Validating Data Analyst Crew outputs...")
             self.logger.info("Validating inputs from Data Analyst Crew")
 
-            contract_path = "artifacts/dataset_contract.json"
-            dataset_path = "data/interim/clean_data.csv"
+            contract_path = str(self.project_root / "artifacts/dataset_contract.json")
+            dataset_path = str(self.project_root / "data/interim/clean_data.csv")
 
             # Create validation report
             try:
                 create_validation_report(
                     contract_path=contract_path,
                     dataset_path=dataset_path,
-                    output_path="artifacts/contract_validation_report.md"
+                    output_path=str(self.project_root / "artifacts/contract_validation_report.md")
                 )
                 print("✅ Dataset contract validation passed!")
                 self.logger_manager.log_validation(
@@ -326,18 +328,18 @@ class RetailAIFlow(Flow[RetailAIState]):
                 df_clean = self._cached_clean_data
                 print("  ✅ Using cached clean data")
             else:
-                df_clean = pd.read_csv("data/interim/clean_data.csv")
+                df_clean = pd.read_csv(str(self.project_root / "data/interim/clean_data.csv"))
                 print("  ⚠️  Loaded clean data from disk")
 
             df_features = engineer_features(df_clean)
-            save_features(df_features)
+            save_features(df_features, str(self.project_root / "data/processed/features.csv"))
             # Cache features in memory
             self._cached_features = df_features
             print(f"  ✅ Features engineered: {df_features.shape}")
 
             print("\n🎯 Step 2/5: Preparing train/test split...")
             import json
-            contract_file = Path("artifacts/dataset_contract.json")
+            contract_file = self.project_root / "artifacts/dataset_contract.json"
             with open(contract_file, 'r') as f:
                 contract = json.load(f)
                 target_column = contract.get('target_column', df_features.columns[-1])
@@ -347,7 +349,7 @@ class RetailAIFlow(Flow[RetailAIState]):
 
             print("\n🤖 Step 3/5: Training model...")
             model = train_model(X, y, model_type='random_forest')
-            save_model(model)
+            save_model(model, str(self.project_root / "artifacts/model.pkl"))
             print("  ✅ Model trained and saved")
 
             print("\n📊 Step 4/5: Evaluating model...")
@@ -367,9 +369,9 @@ class RetailAIFlow(Flow[RetailAIState]):
 
             # Validate required outputs
             required_outputs = [
-                "data/processed/features.csv",
-                "artifacts/model.pkl",
-                "artifacts/model_card.md"
+                str(self.project_root / "data/processed/features.csv"),
+                str(self.project_root / "artifacts/model.pkl"),
+                str(self.project_root / "artifacts/model_card.md")
             ]
 
             try:

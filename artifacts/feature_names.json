@@ -1,0 +1,24 @@
+{
+  "features": [
+    "hour_of_day",
+    "Weekdaysort",
+    "Monthsort",
+    "date_encoded",
+    "datetime_encoded",
+    "cash_type_encoded",
+    "card_encoded",
+    "money_encoded",
+    "coffee_name_encoded",
+    "Time_of_Day_encoded",
+    "Weekday_encoded",
+    "Month_name_encoded",
+    "hour_of_day_x_Weekdaysort",
+    "hour_of_day_squared",
+    "Weekdaysort_squared",
+    "Monthsort_squared",
+    "hour_of_day_binned_encoded",
+    "Weekdaysort_binned_encoded",
+    "numeric_mean",
+    "numeric_std"
+  ]
+}

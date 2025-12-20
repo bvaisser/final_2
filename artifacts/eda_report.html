@@ -1,0 +1,104 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>EDA Report - Retail AI Project</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            h1 { color: #333; }
+            h2 { color: #666; }
+            table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+            th { background-color: #4CAF50; color: white; }
+            img { max-width: 100%; height: auto; margin: 20px 0; }
+        </style>
+    </head>
+    <body>
+        <h1>Exploratory Data Analysis Report</h1>
+
+        <h2>Dataset Overview</h2>
+        <p><strong>Shape:</strong> 3636 rows × 12 columns</p>
+
+        <h2>Data Types</h2>
+        <table>
+            <tr><th>Column</th><th>Data Type</th><th>Non-Null Count</th><th>Unique Values</th></tr>
+            <tr><td>date</td><td>object</td><td>3636</td><td>381</td></tr><tr><td>datetime</td><td>object</td><td>3636</td><td>3636</td></tr><tr><td>hour_of_day</td><td>int64</td><td>3636</td><td>17</td></tr><tr><td>cash_type</td><td>object</td><td>3636</td><td>2</td></tr><tr><td>card</td><td>object</td><td>3636</td><td>1316</td></tr><tr><td>money</td><td>object</td><td>3636</td><td>20</td></tr><tr><td>coffee_name</td><td>object</td><td>3636</td><td>8</td></tr><tr><td>Time_of_Day</td><td>object</td><td>3636</td><td>3</td></tr><tr><td>Weekday</td><td>object</td><td>3636</td><td>7</td></tr><tr><td>Month_name</td><td>object</td><td>3636</td><td>12</td></tr><tr><td>Weekdaysort</td><td>int64</td><td>3636</td><td>7</td></tr><tr><td>Monthsort</td><td>int64</td><td>3636</td><td>12</td></tr>
+        </table>
+
+        <h2>Statistical Summary</h2>
+        <table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>hour_of_day</th>
+      <th>Weekdaysort</th>
+      <th>Monthsort</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>count</th>
+      <td>3636.000000</td>
+      <td>3636.000000</td>
+      <td>3636.000000</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>14.166942</td>
+      <td>3.847910</td>
+      <td>6.394664</td>
+    </tr>
+    <tr>
+      <th>std</th>
+      <td>4.227755</td>
+      <td>1.975983</td>
+      <td>3.480686</td>
+    </tr>
+    <tr>
+      <th>min</th>
+      <td>6.000000</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+    </tr>
+    <tr>
+      <th>25%</th>
+      <td>10.000000</td>
+      <td>2.000000</td>
+      <td>3.000000</td>
+    </tr>
+    <tr>
+      <th>50%</th>
+      <td>14.000000</td>
+      <td>4.000000</td>
+      <td>6.000000</td>
+    </tr>
+    <tr>
+      <th>75%</th>
+      <td>18.000000</td>
+      <td>6.000000</td>
+      <td>10.000000</td>
+    </tr>
+    <tr>
+      <th>max</th>
+      <td>22.000000</td>
+      <td>7.000000</td>
+      <td>12.000000</td>
+    </tr>
+  </tbody>
+</table>
+
+        <h2>Missing Values</h2>
+        <table>
+            <tr><th>Column</th><th>Missing Count</th><th>Missing %</th></tr>
+            <tr><td>date</td><td>0</td><td>0.00%</td></tr><tr><td>datetime</td><td>0</td><td>0.00%</td></tr><tr><td>hour_of_day</td><td>0</td><td>0.00%</td></tr><tr><td>cash_type</td><td>0</td><td>0.00%</td></tr><tr><td>card</td><td>0</td><td>0.00%</td></tr><tr><td>money</td><td>0</td><td>0.00%</td></tr><tr><td>coffee_name</td><td>0</td><td>0.00%</td></tr><tr><td>Time_of_Day</td><td>0</td><td>0.00%</td></tr><tr><td>Weekday</td><td>0</td><td>0.00%</td></tr><tr><td>Month_name</td><td>0</td><td>0.00%</td></tr><tr><td>Weekdaysort</td><td>0</td><td>0.00%</td></tr><tr><td>Monthsort</td><td>0</td><td>0.00%</td></tr>
+        </table>
+
+        <h2>Visualizations</h2>
+        <h3>Correlation Heatmap</h3>
+        <img src="figures/correlation_heatmap.png" alt="Correlation Heatmap">
+
+        <h3>Feature Distributions</h3>
+        <img src="figures/hour_of_day_distribution.png" alt="hour_of_day Distribution"><img src="figures/Weekdaysort_distribution.png" alt="Weekdaysort Distribution"><img src="figures/Monthsort_distribution.png" alt="Monthsort Distribution">
+    </body>
+    </html>
+    

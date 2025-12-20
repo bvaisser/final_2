@@ -11,8 +11,9 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Add parent directory to path for imports
-sys.path.append(str(Path(__file__).parent.parent))
+# Set up project root for imports (DO NOT change working directory)
+PROJECT_ROOT = Path(__file__).parent.parent.resolve()
+sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.utils.logging_utils import get_logger
 from crew.crew_flow import RetailAIFlow
@@ -252,7 +253,7 @@ def show_data_upload_page():
 
         # Save button
         if st.button("Save to data/raw/Coffe_sales.csv"):
-            save_path = Path("data/raw/Coffe_sales.csv")
+            save_path = PROJECT_ROOT / "data/raw/Coffe_sales.csv"
             save_path.parent.mkdir(parents=True, exist_ok=True)
             df.to_csv(save_path, index=False)
             st.success(f"Data saved to {save_path}")
@@ -269,7 +270,7 @@ def show_pipeline_page():
     """)
 
     # Check if data exists
-    data_path = Path("data/raw/Coffe_sales.csv")
+    data_path = PROJECT_ROOT / "data/raw/Coffe_sales.csv"
     if not data_path.exists():
         st.error("❌ No training data found. Please upload data first.")
         return
@@ -339,8 +340,8 @@ def show_results_page():
 
     with tab1:
         st.subheader("Exploratory Data Analysis")
-        eda_path = Path("artifacts/eda_report.html")
-        insights_path = Path("artifacts/insights.md")
+        eda_path = PROJECT_ROOT / "artifacts/eda_report.html"
+        insights_path = PROJECT_ROOT / "artifacts/insights.md"
 
         if insights_path.exists():
             with open(insights_path, 'r') as f:
@@ -350,7 +351,7 @@ def show_results_page():
             st.markdown("---")
             st.subheader("Data Visualizations")
 
-            figures_dir = Path("artifacts/figures")
+            figures_dir = PROJECT_ROOT / "artifacts/figures"
             if figures_dir.exists():
                 eda_figures = list(figures_dir.glob("*.png"))
 
@@ -369,7 +370,7 @@ def show_results_page():
 
     with tab2:
         st.subheader("Model Evaluation Report")
-        eval_path = Path("artifacts/evaluation_report.md")
+        eval_path = PROJECT_ROOT / "artifacts/evaluation_report.md"
 
         if eval_path.exists():
             with open(eval_path, 'r') as f:
@@ -381,31 +382,31 @@ def show_results_page():
             # Classification visualizations
             col1, col2 = st.columns(2)
             with col1:
-                cm_path = Path("artifacts/confusion_matrix.png")
+                cm_path = PROJECT_ROOT / "artifacts/confusion_matrix.png"
                 if cm_path.exists():
                     st.image(str(cm_path), caption="Confusion Matrix")
 
             with col2:
-                roc_path = Path("artifacts/roc_curve.png")
+                roc_path = PROJECT_ROOT / "artifacts/roc_curve.png"
                 if roc_path.exists():
                     st.image(str(roc_path), caption="ROC Curve")
 
             # Regression visualizations
             col3, col4 = st.columns(2)
             with col3:
-                residual_path = Path("artifacts/residual_plot.png")
+                residual_path = PROJECT_ROOT / "artifacts/residual_plot.png"
                 if residual_path.exists():
                     st.image(str(residual_path), caption="Residual Plot")
 
             with col4:
-                actual_pred_path = Path("artifacts/actual_vs_predicted.png")
+                actual_pred_path = PROJECT_ROOT / "artifacts/actual_vs_predicted.png"
                 if actual_pred_path.exists():
                     st.image(str(actual_pred_path), caption="Actual vs Predicted")
 
             # Feature importance
             st.markdown("---")
             st.subheader("Feature Importance")
-            feature_imp_path = Path("artifacts/feature_importance.png")
+            feature_imp_path = PROJECT_ROOT / "artifacts/feature_importance.png"
             if feature_imp_path.exists():
                 st.image(str(feature_imp_path), caption="Top 20 Feature Importances", use_column_width=True)
             else:
@@ -416,7 +417,7 @@ def show_results_page():
 
     with tab3:
         st.subheader("Model Card")
-        card_path = Path("artifacts/model_card.md")
+        card_path = PROJECT_ROOT / "artifacts/model_card.md"
 
         if card_path.exists():
             with open(card_path, 'r') as f:
@@ -427,7 +428,7 @@ def show_results_page():
     with tab4:
         st.subheader("Generated Artifacts")
 
-        artifacts_dir = Path("artifacts")
+        artifacts_dir = PROJECT_ROOT / "artifacts"
         if artifacts_dir.exists():
             files = list(artifacts_dir.glob("*"))
             if files:
@@ -449,7 +450,7 @@ def show_predictions_page():
     """)
 
     # Check if model exists
-    model_path = Path("artifacts/model.pkl")
+    model_path = PROJECT_ROOT / "artifacts/model.pkl"
     if not model_path.exists():
         st.error("❌ No trained model found. Please run the pipeline first.")
         return

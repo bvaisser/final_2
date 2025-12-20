@@ -1,8 +1,8 @@
 # Dataset Contract Validation Report
 
-**Dataset**: data/interim/clean_data.csv
-**Contract**: artifacts/dataset_contract.json
-**Generated**: 2025-12-06 15:29:17.342546
+**Dataset**: /Users/vaisserbaruch/final_2/retail_ai_final_project/data/interim/clean_data.csv
+**Contract**: /Users/vaisserbaruch/final_2/retail_ai_final_project/artifacts/dataset_contract.json
+**Generated**: 2025-12-20 11:34:53.144878
 
 ## Validation Results
 
